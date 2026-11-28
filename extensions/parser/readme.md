@@ -22,7 +22,9 @@ the search path; it finds everything else in its `parser/` directory, next to
 it. The version is `.Rexx.Parser~version` (a release and a refresh date,
 `"1.0 20261126"`).
 
-The parser needs ooRexx 5.3.0 r13562 or later (THROW).
+The parser needs ooRexx 5.3.0 r13562 or later (THROW). An ooRexx that
+does not know its revision (r0: built from sources that are not an SVN
+working copy) is accepted if it has THROW's error 4.901.
 
 ## Installation's `bin` Directory
 

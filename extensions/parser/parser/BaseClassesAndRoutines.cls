@@ -120,15 +120,21 @@
 /*                  decided in the review of the Element and Tree APIs; the   */
 /*                  attributes that only the parser writes are read-only      */
 /*                  (set... methods)                                          */
+/* 20261128         A build that does not know its revision (r0, bug #2194)   */
+/*                  is accepted if it has the uncaught THROW (4.901)          */
 /*                                                                            */
 /******************************************************************************/
 
   -- The parser throws its errors (THROW, RFE #31), and so needs an ooRexx
   -- that has it: in an older one, a THROW would be a command. Since r13550,
   -- a THROW that nobody catches is error 4.901, which shows its DESCRIPTION.
-  -- The minimum is r13562, the SourceForge build that follows it
+  -- The minimum is r13562, the SourceForge build that follows it.
+  -- A build that does not know its revision says r0 (sources that are not
+  -- an SVN working copy, built without -DORX_BLD_LVL: bug #2194); then the
+  -- interpreter is asked instead whether it has the uncaught THROW
   revision = .RexxInfo~revision
-  If \DataType( revision, "W" ) | revision < 13562 Then
+  If revision == 0, KnowsUncaughtThrow() Then Nop
+  Else If \DataType( revision, "W" ) | revision < 13562 Then
     Raise Syntax 98.900 Array( "The Rexx Parser needs ooRexx 5.3.0 r13562" -
       "or later (THROW); this is r"revision )
 
@@ -291,6 +297,19 @@
 ::Method children
   Expose directive
   Return TreeChildren( self, directive, directive~clauseChildAttributes )
+
+/******************************************************************************/
+/* KnowsUncaughtThrow                                                         */
+/******************************************************************************/
+
+-- Whether this ooRexx has error 4.901, the THROW that nobody catches
+-- (r13550): ERRORTEXT gives its text. An older one gives "" for it, and one
+-- older than r13437 does not take a code with a subcode (error 40)
+
+::Routine KnowsUncaughtThrow
+  Signal On Syntax
+  Return ErrorText( 4.901 ) \== ""
+Syntax: Return 0
 
 /******************************************************************************/
 /* ArgArray                                                                   */
